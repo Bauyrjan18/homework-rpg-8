@@ -1,5 +1,6 @@
 package com.narxoz.rpg.combatant;
 import com.narxoz.rpg.state.NormalState;
+import com.narxoz.rpg.state.HeroState;
 
 public class Hero {
 
@@ -8,6 +9,7 @@ public class Hero {
     private final int maxHp;
     private final int attackPower;
     private final int defense;
+    private HeroState state;
 
     public Hero(String name, int hp, int attackPower, int defense) {
         this.name = name;
@@ -15,6 +17,7 @@ public class Hero {
         this.maxHp = hp;
         this.attackPower = attackPower;
         this.defense = defense;
+        this.state = new NormalState();
     }
 
     public String getName()        { return name; }
@@ -23,21 +26,17 @@ public class Hero {
     public int getAttackPower()    { return attackPower; }
     public int getDefense()        { return defense; }
     public boolean isAlive()       { return hp > 0; }
-
-    /**
-     * Reduces this hero's HP by the given amount, clamped to zero.
-     *
-     * @param amount the damage to apply; must be non-negative
-     */
+    public HeroState getState() { return state; }
+    public void setState(HeroState state) {
+        this.state = state;
+        System.out.println("  >>> " + name + " is now " + state.getName() + "!");
+    }
     public void takeDamage(int amount) {
+        if (this.state != null) {
+            amount = this.state.modifyIncomingDamage(amount);
+        }
         hp = Math.max(0, hp - amount);
     }
-
-    /**
-     * Restores this hero's HP by the given amount, clamped to maxHp.
-     *
-     * @param amount the HP to restore; must be non-negative
-     */
     public void heal(int amount) {
         hp = Math.min(maxHp, hp + amount);
     }
